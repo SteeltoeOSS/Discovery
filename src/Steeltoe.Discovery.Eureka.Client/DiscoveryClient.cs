@@ -119,14 +119,15 @@ namespace Steeltoe.Discovery.Eureka
             {
                 var result = RegisterAsync();
                 result.Wait();
-
-                var intervalInMilli = ApplicationInfoManager.Instance.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
-                if (ClientConfig.ShouldOnDemandUpdateStatusChange)
+                if (result.Result)
                 {
-                    ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
+                    var intervalInMilli = ApplicationInfoManager.Instance.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+                    _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
+                    if (ClientConfig.ShouldOnDemandUpdateStatusChange)
+                    {
+                        ApplicationInfoManager.Instance.StatusChangedEvent += Instance_StatusChangedEvent;
+                    }
                 }
-
             }
 
             if (ClientConfig.ShouldFetchRegistry)
