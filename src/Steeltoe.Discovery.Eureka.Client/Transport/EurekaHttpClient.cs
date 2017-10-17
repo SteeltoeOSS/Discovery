@@ -100,6 +100,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     _logger?.LogDebug("RegisterAsync {0}, status: {1}", requestUri.ToString(), response.StatusCode);
                     EurekaHttpResponse resp = new EurekaHttpResponse(response.StatusCode);
                     resp.Headers = response.Headers;
+                    if (response.StatusCode == HttpStatusCode.InternalServerError)
+                    {
+                        var jsonError = await response.Content.ReadAsStringAsync();
+                        _logger?.LogDebug($"Something goes wrong in registering: {jsonError}");
+                    }
                     return resp;
                 }
 
