@@ -109,11 +109,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     [JsonProperty("@enabled")] bool enabled,
                     [JsonProperty("$")] int port)
             {
-                Enabled = enabled;
+                IsEnabled = enabled;
                 Port = port;
             }
+
+            public bool IsEnabled { get; private set; }
+
             [JsonProperty("@enabled")]
-            public bool Enabled { get; private set; }
+            public string Enabled { get { return IsEnabled.ToString(); } }
 
             [JsonProperty("$")]
             public int Port { get; private set; }
