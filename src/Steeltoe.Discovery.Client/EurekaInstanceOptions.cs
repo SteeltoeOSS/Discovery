@@ -224,12 +224,16 @@ namespace Steeltoe.Discovery.Client
         {
             get
             {
-                if (_ipAddress != null)
+                ////when _ipAddress already has the value and not same with _thisHostAddress,use _ipAddress. otherwise,use the config
+                if (_ipAddress != null && _ipAddress != _thisHostAddress)
                 {
                     return _ipAddress;
                 }
-                return _thisHostAddress;
+
+                return GetString(Eureka?.Instance?.IpAddress, _thisHostAddress);
+
             }
+
 
             set
             {
@@ -759,6 +763,11 @@ namespace Steeltoe.Discovery.Client
         /// Configuration property: eureka:instance:preferIpAddress
         /// </summary>
         public string PreferIpAddress { get; set; }
+
+        /// <summary>
+        ///  Configuration property: eureka:instance:IpAddress
+        /// </summary>
+        public string IpAddress { get; set; }
     }
 
 }
