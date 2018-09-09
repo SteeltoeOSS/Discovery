@@ -212,5 +212,27 @@ namespace Steeltoe.Discovery.Client.Test
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
         }
+
+        [Fact]
+        public void AddDiscoveryClient_WithDiscoveryOptionsAndHttpClient_AddsDiscoveryClient()
+        {
+            // Arrange
+            DiscoveryOptions options = new DiscoveryOptions()
+            {
+                ClientType = DiscoveryClientType.EUREKA,
+                ClientOptions = new EurekaClientOptions()
+                {
+                    ShouldFetchRegistry = false,
+                    ShouldRegisterWithEureka = false
+                }
+            };
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
+            services.AddDiscoveryClient(options, handler: new System.Net.Http.HttpClientHandler());
+
+            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
+            Assert.NotNull(service);
+        }
     }
 }

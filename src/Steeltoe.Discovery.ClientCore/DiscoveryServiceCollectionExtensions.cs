@@ -145,7 +145,7 @@ namespace Steeltoe.Discovery.Client
 
             if (handler != null)
             {
-                services.AddSingleton(s => new EurekaDiscoveryClientHandlerProvider(handler));
+                services.AddTransient(s => new EurekaDiscoveryClientHandlerProvider(handler));
             }
 
             services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
