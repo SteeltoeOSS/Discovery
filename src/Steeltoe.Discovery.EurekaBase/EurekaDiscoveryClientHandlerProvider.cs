@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Net.Http;
 
 namespace Steeltoe.Discovery.Eureka
 {
-    public class EurekaDiscoveryClientHandlerProvider
+    public class EurekaDiscoveryClientHandlerProvider : IEurekaDiscoveryClientHandlerProvider
     {
-        private readonly HttpClientHandler _handler;
+        private readonly Func<HttpClientHandler> _handler;
 
-        public EurekaDiscoveryClientHandlerProvider(HttpClientHandler handler)
+        public EurekaDiscoveryClientHandlerProvider(Func<HttpClientHandler> handler)
         {
             _handler = handler ?? throw new System.ArgumentNullException(nameof(handler));
         }
 
-        public HttpClientHandler GetHttpClientHandler() => _handler;
+        public HttpClientHandler GetHttpClientHandler() => _handler();
     }
 }

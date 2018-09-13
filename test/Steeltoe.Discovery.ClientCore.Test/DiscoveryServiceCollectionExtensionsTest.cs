@@ -229,7 +229,7 @@ namespace Steeltoe.Discovery.Client.Test
 
             var services = new ServiceCollection();
             services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(options, handler: new System.Net.Http.HttpClientHandler());
+            services.AddDiscoveryClient(options, handler: () => new System.Net.Http.HttpClientHandler());
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
