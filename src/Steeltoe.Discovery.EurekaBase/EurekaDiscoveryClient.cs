@@ -37,7 +37,7 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, EurekaDiscoveryClientHandlerProvider handlerProvider = null)
+            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             {
                 _config = null;
                 _configOptions = config ?? throw new ArgumentNullException(nameof(config));
@@ -63,7 +63,7 @@ namespace Steeltoe.Discovery.Eureka
             EurekaApplicationInfoManager appInfoManager,
             IEurekaHttpClient httpClient = null,
             ILoggerFactory logFactory = null,
-            EurekaDiscoveryClientHandlerProvider handlerProvider = null)
+            IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             : base(appInfoManager, logFactory)
         {
             _thisInstance = new ThisServiceInstance(instConfig);

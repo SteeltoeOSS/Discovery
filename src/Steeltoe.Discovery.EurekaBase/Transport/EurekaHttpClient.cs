@@ -34,7 +34,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected IDictionary<string, string> _headers;
 
         protected IEurekaClientConfig _config;
-        protected EurekaDiscoveryClientHandlerProvider _handlerProvider;
+        protected IEurekaDiscoveryClientHandlerProvider _handlerProvider;
 
         protected virtual IEurekaClientConfig Config
         {
@@ -51,12 +51,12 @@ namespace Steeltoe.Discovery.Eureka.Transport
         public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
             : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
 
-        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, EurekaDiscoveryClientHandlerProvider handlerProvider = null)
+        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             : this(config, new Dictionary<string, string>(), logFactory, handlerProvider)
         {
         }
 
-        public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null, EurekaDiscoveryClientHandlerProvider handlerProvider = null)
+        public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _handlerProvider = handlerProvider;
