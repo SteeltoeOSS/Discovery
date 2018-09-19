@@ -61,13 +61,14 @@ namespace Steeltoe.Discovery.Eureka
             IOptionsMonitor<EurekaInstanceOptions> instConfig,
             EurekaApplicationInfoManager appInfoManager,
             IEurekaHttpClient httpClient = null,
-            ILoggerFactory logFactory = null)
+            ILoggerFactory logFactory = null,
+            IHealthCheckHandler healthCheckHandler = null)
             : base(appInfoManager, logFactory)
         {
             _thisInstance = new ThisServiceInstance(instConfig);
             _configOptions = clientConfig;
             _httpClient = httpClient;
-
+            HealthCheckHandler = healthCheckHandler;
             if (_httpClient == null)
             {
                 _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory);
