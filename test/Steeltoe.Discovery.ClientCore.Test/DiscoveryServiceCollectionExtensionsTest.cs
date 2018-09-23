@@ -19,6 +19,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.IO;
+using System.Net.Http;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test
@@ -222,17 +223,36 @@ namespace Steeltoe.Discovery.Client.Test
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = new EurekaClientOptions()
                 {
-                    ShouldFetchRegistry = false,
+                    ShouldFetchRegistry = true,
                     ShouldRegisterWithEureka = false
                 }
             };
 
             var services = new ServiceCollection();
+
+            // Add provider to be injected into HttpClient
+            var hprovider = new TestClientHandlerProvider();
+            services.AddSingleton<IEurekaDiscoveryClientHandlerProvider>(hprovider);
+
             services.AddSingleton<IApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(options, handler: () => new System.Net.Http.HttpClientHandler());
+            services.AddDiscoveryClient(options);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
+
+            // Provider should have been called
+            Assert.True(hprovider.Called);
+        }
+
+        public class TestClientHandlerProvider : IEurekaDiscoveryClientHandlerProvider
+        {
+            public bool Called { get; set; } = false;
+
+            public HttpClientHandler GetHttpClientHandler()
+            {
+                Called = true;
+                return new System.Net.Http.HttpClientHandler();
+            }
         }
     }
 }

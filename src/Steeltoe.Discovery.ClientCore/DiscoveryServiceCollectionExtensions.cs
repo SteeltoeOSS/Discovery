@@ -29,7 +29,7 @@ namespace Steeltoe.Discovery.Client
     {
         public const string EUREKA_PREFIX = "eureka";
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions, IDiscoveryLifecycle lifecycle = null, Func<HttpClientHandler> handler = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions, IDiscoveryLifecycle lifecycle = null)
         {
             if (services == null)
             {
@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Client
 
                 services.AddSingleton<IOptionsMonitor<EurekaInstanceOptions>>(new OptionsMonitorWrapper<EurekaInstanceOptions>(regOptions));
 
-                AddEurekaServices(services, lifecycle, handler);
+                AddEurekaServices(services, lifecycle);
             }
             else
             {
@@ -70,7 +70,7 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions, IDiscoveryLifecycle lifecycle = null, Func<HttpClientHandler> handler = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions, IDiscoveryLifecycle lifecycle = null)
         {
             if (services == null)
             {
@@ -85,10 +85,10 @@ namespace Steeltoe.Discovery.Client
             var options = new DiscoveryOptions();
             setupOptions(options);
 
-            return services.AddDiscoveryClient(options, handler: handler);
+            return services.AddDiscoveryClient(options);
         }
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null, Func<HttpClientHandler> handler = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
         {
             if (services == null)
             {
@@ -100,12 +100,12 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(config));
             }
 
-            AddDiscoveryServices(services, config, lifecycle, handler);
+            AddDiscoveryServices(services, config, lifecycle);
 
             return services;
         }
 
-        private static void AddDiscoveryServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle, Func<HttpClientHandler> handler)
+        private static void AddDiscoveryServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
             int childCount = clientConfigsection.GetChildren().Count();
@@ -120,7 +120,7 @@ namespace Steeltoe.Discovery.Client
                 {
                     EurekaPostConfigurer.UpdateConfiguration(config, options);
                 });
-                AddEurekaServices(services, lifecycle, handler);
+                AddEurekaServices(services, lifecycle);
             }
             else
             {
@@ -128,7 +128,7 @@ namespace Steeltoe.Discovery.Client
             }
         }
 
-        private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle, Func<HttpClientHandler> handler)
+        private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle)
         {
             services.AddSingleton<EurekaApplicationInfoManager>();
             services.AddSingleton<EurekaDiscoveryManager>();
@@ -141,11 +141,6 @@ namespace Steeltoe.Discovery.Client
             else
             {
                 services.AddSingleton(lifecycle);
-            }
-
-            if (handler != null)
-            {
-                services.AddSingleton< IEurekaDiscoveryClientHandlerProvider>(s => new EurekaDiscoveryClientHandlerProvider(handler));
             }
 
             services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
