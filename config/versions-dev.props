@@ -2,7 +2,8 @@
   <PropertyGroup>
     <SteeltoeVersion>$(STEELTOE_VERSION)</SteeltoeVersion>
     <SteeltoeVersionSuffix>$(STEELTOE_DASH_VERSION_SUFFIX)</SteeltoeVersionSuffix>
-    <SteeltoeCommonVersion>2.1.0-dev-00076</SteeltoeCommonVersion>
+    <SteeltoeCommonVersion>2.2.0-dev-00089</SteeltoeCommonVersion>
+    <SteeltoeConnectorVersion>2.2.0-dev-00351</SteeltoeConnectorVersion>
     <ExtensionsVersion>2.0.0</ExtensionsVersion>
     <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <AspNetCoreTestVersion>2.1.0</AspNetCoreTestVersion>
@@ -14,5 +15,6 @@
     <TestSdkVersion>15.7.2</TestSdkVersion>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitStudioVersion>2.3.1</XunitStudioVersion>
+    <ConsulVersion>0.7.2.4</ConsulVersion>
   </PropertyGroup>
 </Project>

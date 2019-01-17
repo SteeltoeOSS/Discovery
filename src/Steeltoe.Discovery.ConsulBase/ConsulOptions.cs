@@ -12,9 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+namespace Steeltoe.Discovery.Consul
+{
+    public class ConsulOptions
+    {
+        public string Host { get; set; } = "localhost";
 
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.EurekaBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.ClientCore.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.EurekaBase.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.ClientCore.Test")]
+        public string Scheme { get; set; } = "http";
+
+        public int Port { get; set; } = 8500;
+
+        public string Datacenter { get; set; }
+
+        public string Token { get; set; }
+
+        public string WaitTime { get; set; }
+
+        public bool Enable { get; set; }
+    }
+}

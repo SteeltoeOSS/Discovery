@@ -364,7 +364,7 @@ namespace Steeltoe.Discovery.Eureka
             catch (Exception e)
             {
                 // Log
-                _logger?.LogError(e, "FetchRegistry Failed");
+                _logger?.LogError(e, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}", ClientConfig.EurekaServerServiceUrls);
                 return false;
             }
 
@@ -601,8 +601,6 @@ namespace Steeltoe.Discovery.Eureka
             if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
                 var result = RegisterAsync();
-                result.Wait();
-
                 if (result.Result)
                 {
                     _logger?.LogInformation("Starting HeartBeat");
@@ -623,7 +621,6 @@ namespace Steeltoe.Discovery.Eureka
             {
                 var result = FetchRegistryAsync(true);
                 result.Wait();
-
                 var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
                 _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
             }

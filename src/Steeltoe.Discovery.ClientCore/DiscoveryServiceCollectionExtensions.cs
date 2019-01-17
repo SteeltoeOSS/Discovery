@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka;
@@ -101,7 +103,33 @@ namespace Steeltoe.Discovery.Client
                 throw new ArgumentNullException(nameof(config));
             }
 
-            AddDiscoveryServices(services, config, lifecycle);
+            IServiceInfo info = GetSingletonDiscoveryServiceInfo(config);
+
+            AddDiscoveryServices(services, info, config, lifecycle);
+
+            return services;
+        }
+
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName, IDiscoveryLifecycle lifecycle = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrEmpty(serviceName))
+            {
+                throw new ArgumentNullException(nameof(serviceName));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            IServiceInfo info = GetNamedDiscoveryServiceInfo(config, serviceName);
+
+            AddDiscoveryServices(services, info, config, lifecycle);
 
             return services;
         }
@@ -122,20 +150,27 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
-        private static void AddDiscoveryServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
+
+        private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
+
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
             int childCount = clientConfigsection.GetChildren().Count();
-            if (childCount > 0)
+            if (childCount > 0 || info is EurekaServiceInfo)
             {
+                EurekaServiceInfo einfo = info as EurekaServiceInfo;
                 var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
                 services.Configure<EurekaClientOptions>(clientSection);
+                services.PostConfigure<EurekaClientOptions>((options) =>
+                {
+                    EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+                });
 
                 var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
                 services.Configure<EurekaInstanceOptions>(instSection);
                 services.PostConfigure<EurekaInstanceOptions>((options) =>
                 {
-                    EurekaPostConfigurer.UpdateConfiguration(config, options);
+                    EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
                 });
                 AddEurekaServices(services, lifecycle);
             }
@@ -174,7 +209,62 @@ namespace Steeltoe.Discovery.Client
             }
 
             services.AddSingleton<IDiscoveryClient>((p) => p.GetService<EurekaDiscoveryClient>());
+
             services.AddSingleton<IHealthContributor, EurekaHealthContributor>();
+
+        }
+
+        private static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
+        {
+            var info = config.GetServiceInfo(serviceName);
+            if (info == null)
+            {
+                throw new ConnectorException(string.Format("No service with name: {0} found.", serviceName));
+            }
+
+            if (!IsRecognizedDiscoveryService(info))
+            {
+                throw new ConnectorException(string.Format("Service with name: {0} unrecognized Discovery ServiceInfo.", serviceName));
+            }
+
+            return info;
+        }
+
+        private static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration config)
+        {
+            // Note: Could be other discovery type services in future
+            var eurekaInfos = config.GetServiceInfos<EurekaServiceInfo>();
+
+            if (eurekaInfos.Count > 0)
+            {
+                if (eurekaInfos.Count != 1)
+                {
+                    throw new ConnectorException(string.Format("Multiple discovery service types bound to application."));
+                }
+
+                return eurekaInfos[0];
+            }
+
+            return null;
+        }
+
+        private static bool IsRecognizedDiscoveryService(IServiceInfo info)
+        {
+            return (info as EurekaServiceInfo) != null;
+        }
+
+        public class ApplicationLifecycle : IDiscoveryLifecycle
+        {
+            public ApplicationLifecycle(IApplicationLifetime lifeCycle, IDiscoveryClient client)
+            {
+                ApplicationStopping = lifeCycle.ApplicationStopping;
+
+                // hook things up so that that things are unregistered when the application terminates
+                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
+            }
+
+            public CancellationToken ApplicationStopping { get; set; }
+
         }
 
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>

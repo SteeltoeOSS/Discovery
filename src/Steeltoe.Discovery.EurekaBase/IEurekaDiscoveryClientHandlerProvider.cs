@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+using System.Net.Http;
 
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.EurekaBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.ClientCore.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.EurekaBase.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.ClientCore.Test")]
+namespace Steeltoe.Discovery.Eureka
+{
+    public interface IEurekaDiscoveryClientHandlerProvider
+    {
+        HttpClientHandler GetHttpClientHandler();
+    }
+}

@@ -37,10 +37,11 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null)
+            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             {
                 _config = null;
                 _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+                _handlerProvider = handlerProvider;
                 Initialize(new Dictionary<string, string>(), logFactory);
             }
         }
@@ -62,7 +63,11 @@ namespace Steeltoe.Discovery.Eureka
             EurekaApplicationInfoManager appInfoManager,
             IEurekaHttpClient httpClient = null,
             ILoggerFactory logFactory = null,
+
             IHealthCheckHandler healthCheckHandler = null)
+
+            IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
+
             : base(appInfoManager, logFactory)
         {
             _thisInstance = new ThisServiceInstance(instConfig);
@@ -71,7 +76,7 @@ namespace Steeltoe.Discovery.Eureka
             HealthCheckHandler = healthCheckHandler;
             if (_httpClient == null)
             {
-                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory);
+                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider);
             }
 
             Initialize();
