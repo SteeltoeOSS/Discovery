@@ -57,7 +57,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             Assert.Contains("foo", reg.Metadata.Keys);
             Assert.Contains("bar", reg.Metadata.Values);
             Assert.False(reg.IsSecure);
-            Assert.Equal(new Uri("http://address:1234"), reg.Uri);
+            Assert.Equal(new Uri("https://address:1234"), reg.Uri);
         }
 
         [Fact]

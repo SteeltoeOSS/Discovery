@@ -424,7 +424,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var cconfig = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://bad.host:9999/," + uri
+                EurekaServerServiceUrls = "https://bad.host:9999/," + uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
@@ -492,9 +492,9 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     'sid':'na',
     'port':{'@enabled':true,'$':80},
     'securePort':{'@enabled':false,'$':443},
-    'homePageUrl':'http://DESKTOP-GNQ5SUT:80/',
-    'statusPageUrl':'http://DESKTOP-GNQ5SUT:80/Status',
-    'healthCheckUrl':'http://DESKTOP-GNQ5SUT:80/healthcheck',
+    'homePageUrl':'https://DESKTOP-GNQ5SUT:80/',
+    'statusPageUrl':'https://DESKTOP-GNQ5SUT:80/Status',
+    'healthCheckUrl':'https://DESKTOP-GNQ5SUT:80/healthcheck',
     'secureHealthCheckUrl':null,
     'vipAddress':'DESKTOP-GNQ5SUT:80',
     'secureVipAddress':'DESKTOP-GNQ5SUT:443',
@@ -556,9 +556,9 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     'sid':'na',
     'port':{'@enabled':true,'$':80},
     'securePort':{'@enabled':false,'$':443},
-    'homePageUrl':'http://DESKTOP-GNQ5SUT:80/',
-    'statusPageUrl':'http://DESKTOP-GNQ5SUT:80/Status',
-    'healthCheckUrl':'http://DESKTOP-GNQ5SUT:80/healthcheck',
+    'homePageUrl':'https://DESKTOP-GNQ5SUT:80/',
+    'statusPageUrl':'https://DESKTOP-GNQ5SUT:80/Status',
+    'healthCheckUrl':'https://DESKTOP-GNQ5SUT:80/healthcheck',
     'secureHealthCheckUrl':null,
     'vipAddress':'DESKTOP-GNQ5SUT:80',
     'secureVipAddress':'DESKTOP-GNQ5SUT:443',
@@ -588,7 +588,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var cconfig = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://bad.host:9999/," + uri
+                EurekaServerServiceUrls = "https://bad.host:9999/," + uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
@@ -779,15 +779,15 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void MakeServiceUrl_AppendsSlash_IfMissing()
         {
-            var result = EurekaHttpClient.MakeServiceUrl("http://boo:123");
-            Assert.Equal("http://boo:123/", result);
+            var result = EurekaHttpClient.MakeServiceUrl("https://boo:123");
+            Assert.Equal("https://boo:123/", result);
         }
 
         [Fact]
         public void MakeServiceUrl_DoesntAppendSlash_IfPresent()
         {
-            var result = EurekaHttpClient.MakeServiceUrl("http://boo:123/");
-            Assert.Equal("http://boo:123/", result);
+            var result = EurekaHttpClient.MakeServiceUrl("https://boo:123/");
+            Assert.Equal("https://boo:123/", result);
         }
 
         [Fact]
@@ -799,12 +799,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             };
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://boo:123/eureka/"
+                EurekaServerServiceUrls = "https://boo:123/eureka/"
             };
             var client = new EurekaHttpClient(config, headers);
-            var result = client.GetRequestMessage(HttpMethod.Post, new Uri("http://boo:123/eureka/"));
+            var result = client.GetRequestMessage(HttpMethod.Post, new Uri("https://boo:123/eureka/"));
             Assert.Equal(HttpMethod.Post, result.Method);
-            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.Equal(new Uri("https://boo:123/eureka/"), result.RequestUri);
             Assert.True(result.Headers.Contains("foo"));
         }
 
@@ -813,16 +813,16 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://boo:123/eureka/"
+                EurekaServerServiceUrls = "https://boo:123/eureka/"
             };
             var client = new EurekaHttpClient(config);
             var result = client.GetRequestMessage(HttpMethod.Post, new Uri(config.EurekaServerServiceUrls));
             Assert.Equal(HttpMethod.Post, result.Method);
-            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.Equal(new Uri("https://boo:123/eureka/"), result.RequestUri);
             Assert.False(result.Headers.Contains("Authorization"));
 
             // arrange
-            var clientOptions = new EurekaClientOptions { ServiceUrl = "http://boo:123/eureka/" };
+            var clientOptions = new EurekaClientOptions { ServiceUrl = "https://boo:123/eureka/" };
             var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
             client = new EurekaHttpClient(optionsMonitor);
 
@@ -831,7 +831,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             // assert
             Assert.Equal(HttpMethod.Post, result.Method);
-            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.Equal(new Uri("https://boo:123/eureka/"), result.RequestUri);
             Assert.False(result.Headers.Contains("Authorization"));
         }
 
@@ -840,16 +840,16 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/"
+                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/"
             };
             var client = new EurekaHttpClient(config);
             var result = client.GetRequestMessage(HttpMethod.Post, new Uri(config.EurekaServerServiceUrls));
             Assert.Equal(HttpMethod.Post, result.Method);
-            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.Equal(new Uri("https://boo:123/eureka/"), result.RequestUri);
             Assert.True(result.Headers.Contains("Authorization"));
 
             // arrange
-            var clientOptions = new EurekaClientOptions { ServiceUrl = "http://user:pass@boo:123/eureka/" };
+            var clientOptions = new EurekaClientOptions { ServiceUrl = "https://user:pass@boo:123/eureka/" };
             var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
             client = new EurekaHttpClient(optionsMonitor);
 
@@ -858,7 +858,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             // assert
             Assert.Equal(HttpMethod.Post, result.Method);
-            Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
+            Assert.Equal(new Uri("https://boo:123/eureka/"), result.RequestUri);
             Assert.True(result.Headers.Contains("Authorization"));
         }
 
@@ -867,7 +867,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://boo:123/eureka/"
+                EurekaServerServiceUrls = "https://boo:123/eureka/"
             };
             var client = new EurekaHttpClient(config, new HttpClient());
             Dictionary<string, string> queryArgs = new Dictionary<string, string>()
@@ -875,9 +875,9 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 { "foo", "bar" },
                 { "bar", "foo" }
             };
-            Uri result = client.GetRequestUri("http://boo:123/eureka", queryArgs);
+            Uri result = client.GetRequestUri("https://boo:123/eureka", queryArgs);
             Assert.NotNull(result);
-            Assert.Equal("http://boo:123/eureka?foo=bar&bar=foo", result.ToString());
+            Assert.Equal("https://boo:123/eureka?foo=bar&bar=foo", result.ToString());
         }
 
         [Fact]
@@ -885,12 +885,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
+                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
             };
             var client = new EurekaHttpClient(config);
             var result = client.GetServiceUrlCandidates();
-            Assert.Contains("http://user:pass@boo:123/eureka/", result);
-            Assert.Contains("http://user:pass@foo:123/eureka/", result);
+            Assert.Contains("https://user:pass@boo:123/eureka/", result);
+            Assert.Contains("https://user:pass@foo:123/eureka/", result);
         }
 
         [Fact]
@@ -898,15 +898,15 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka,http://user:pass@blah:123/eureka,http://user:pass@blah.blah:123/eureka"
+                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka,http://user:pass@blah:123/eureka,http://user:pass@blah.blah:123/eureka"
             };
             var client = new EurekaHttpClient(config);
-            client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
-            client.AddToFailingServiceUrls("http://user:pass@blah.blah:123/eureka/");
+            client.AddToFailingServiceUrls("https://user:pass@foo:123/eureka/");
+            client.AddToFailingServiceUrls("https://user:pass@blah.blah:123/eureka/");
 
             var result = client.GetServiceUrlCandidates();
-            Assert.Contains("http://user:pass@boo:123/eureka/", result);
-            Assert.Contains("http://user:pass@blah:123/eureka/", result);
+            Assert.Contains("https://user:pass@boo:123/eureka/", result);
+            Assert.Contains("https://user:pass@blah:123/eureka/", result);
             Assert.Equal(2, result.Count);
         }
 
@@ -915,14 +915,14 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
+                EurekaServerServiceUrls = "https://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
             };
             var client = new EurekaHttpClient(config);
-            client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
+            client.AddToFailingServiceUrls("https://user:pass@foo:123/eureka/");
 
             var result = client.GetServiceUrlCandidates();
-            Assert.Contains("http://user:pass@boo:123/eureka/", result);
-            Assert.Contains("http://user:pass@foo:123/eureka/", result);
+            Assert.Contains("https://user:pass@boo:123/eureka/", result);
+            Assert.Contains("https://user:pass@foo:123/eureka/", result);
         }
     }
 }
