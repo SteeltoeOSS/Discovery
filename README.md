@@ -24,7 +24,7 @@ Currently all of the code and samples have been tested on .NET Core 2.0, .NET 4.
 
 ## Usage
 
-For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
+For more information on how to use these components see the online [Steeltoe documentation](https://steeltoe.io/).
 
 ## Nuget Feeds
 
