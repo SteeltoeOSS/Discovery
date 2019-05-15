@@ -1,5 +1,7 @@
 # .NET Service Discovery & Registration
 
+> NOTICE: This repository has been relocated as a sub-directory under the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository. All issues and future development will be done under that repository.
+
 A Service Registry provides a database which applications can use in implementing the Service Discovery pattern; one of the key tenets of a micro-service based architecture. Trying to hand-configure each client of a service or adopt some form of access convention can be difficult and prove to be brittle in production. Instead, your applications can use a Service Registry to dynamically discover and call registered services.
 
 There are several popular options for Service Registries. Netflix built and then open-sourced their own service registry, Eureka. Another relatively new, but increasingly popular option is Consul.
